@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Route, Switch, Redirect } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import Users from "./layouts/users";
@@ -10,8 +10,14 @@ import { QualitiesProvider } from "./hooks/useQualities";
 import AuthProvider from "./hooks/useAuth";
 import ProtectedRoute from "./components/common/protectedRoute";
 import LogOut from "./layouts/logOut";
+import { useDispatch } from "react-redux";
+import { loadQualitiesList } from "./store/qualities";
 
 function App() {
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(loadQualitiesList());
+    }, []);
     return (
         <div>
             <AuthProvider>

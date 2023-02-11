@@ -7,9 +7,10 @@ import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import BackHistoryButton from "../../common/backButton";
-import { useQualities } from "../../../hooks/useQualities";
 import { useProfessions } from "../../../hooks/useProfession";
 import { useAuth } from "../../../hooks/useAuth";
+import { useSelector } from "react-redux";
+import { getQualities, getQualitiesLoadingStatus } from "../../../store/qualities";
 
 const EditUserPage = () => {
     const history = useHistory();
@@ -21,17 +22,16 @@ const EditUserPage = () => {
         sex: "male",
         qualities: []
     });
-    // const [professions, setProfession] = useState([]);
-    // const [qualities, setQualities] = useState([]);
+
     const { currentUser, updateProfile } = useAuth();
-    // console.log(currentUser);
-    const { qualities, isLoading: qualitiesLoading } = useQualities();
-    // console.log("qualities", qualities);
+
+    const qualities = useSelector(getQualities());
+    const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const qualitiesList = qualities.map((q) => ({
         label: q.name,
         value: q._id
     }));
-    // console.log(qualitiesList);
+
     const {
         professions,
         isLoading: professionsLoading
@@ -42,29 +42,6 @@ const EditUserPage = () => {
     }));
 
     const [errors, setErrors] = useState({});
-
-    // const getProfessionById = (id) => {
-    //     for (const prof of professions) {
-    //         if (prof.value === id) {
-    //             return { _id: prof.value, name: prof.label };
-    //         }
-    //     }
-    // };
-    // const getQualities = (elements) => {
-    //     const qualitiesArray = [];
-    //     for (const elem of elements) {
-    //         for (const quality in qualities) {
-    //             if (elem.value === qualities[quality].value) {
-    //                 qualitiesArray.push({
-    //                     _id: qualities[quality].value,
-    //                     name: qualities[quality].label,
-    //                     color: qualities[quality].color
-    //                 });
-    //             }
-    //         }
-    //     }
-    //     return qualitiesArray;
-    // };
 
     const handleSubmit = async (e) => {
         console.log("Обновить пользователя ");
@@ -87,28 +64,7 @@ const EditUserPage = () => {
         }
     };
 
-    // const handleSubmit = (e) => {
-    //     console.log("Нажата кнопка");
-    //     e.preventDefault();
-    //     const isValid = validate();
-    //     if (!isValid) return;
-    //     const { profession, qualities } = data;
-    //     api.users
-    //         .update(userId, {
-    //             ...data,
-    //             profession: getProfessionById(profession),
-    //             qualities: getQualities(qualities)
-    //         })
-    //         .then((data) => history.push(`/users/${data._id}`));
-    //     console.log({
-    //         ...data,
-    //         profession: getProfessionById(profession),
-    //         qualities: getQualities(qualities)
-    //     });
-    // };
     const getQualitiesId = (data) => {
-        // console.log("data", data);
-
         return data.map((qid) =>
             qualitiesList.find((qual) => qid === qual.value)
         );
@@ -125,12 +81,6 @@ const EditUserPage = () => {
             setIsLoading(false);
         }
     }, [currentUser, professionsLoading, qualitiesLoading]);
-
-    // useEffect(() => {
-    //     if (currentUser && !professionsLoading && !qualitiesLoading) {
-    //         setIsLoading(false);
-    //     }
-    // }, [currentUser, professionsLoading, qualitiesLoading]);
 
     const validatorConfig = {
         email: {

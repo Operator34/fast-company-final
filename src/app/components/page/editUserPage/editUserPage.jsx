@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 import { validator } from "../../../utils/validator";
-// import api from "../../../api";
 import TextField from "../../common/form/textField";
 import SelectField from "../../common/form/selectField";
 import RadioField from "../../common/form/radioField";
 import MultiSelectField from "../../common/form/multiSelectField";
 import BackHistoryButton from "../../common/backButton";
-import { useProfessions } from "../../../hooks/useProfession";
+
 import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import { getQualities, getQualitiesLoadingStatus } from "../../../store/qualities";
+import { getProfessions, getProfessionsLoadingStatus } from "../../../store/professions";
 
 const EditUserPage = () => {
     const history = useHistory();
@@ -32,10 +32,9 @@ const EditUserPage = () => {
         value: q._id
     }));
 
-    const {
-        professions,
-        isLoading: professionsLoading
-    } = useProfessions();
+    const professions = useSelector(getProfessions());
+    const professionsLoading = useSelector(getProfessionsLoadingStatus());
+
     const professionsList = professions.map((p) => ({
         label: p.name,
         value: p._id
@@ -113,7 +112,6 @@ const EditUserPage = () => {
     };
     const isValid = Object.keys(errors).length === 0;
 
-console.log("data", data);
     return (
         <div className="container mt-5">
             <BackHistoryButton />

@@ -7,10 +7,9 @@ import SelectField from "../common/form/selectField";
 import RadioField from "../common/form/radioField";
 import MultiSelectField from "../common/form/multiSelectField";
 import CheckBoxField from "../common/form/checkBoxField";
-
-import { useProfessions } from "../../hooks/useProfession";
 import { useAuth } from "../../hooks/useAuth";
 import { getQualities } from "../../store/qualities";
+import { getProfessions } from "../../store/professions";
 
 const RegisterForm = () => {
     const history = useHistory();
@@ -30,7 +29,7 @@ const RegisterForm = () => {
         value: q._id
     }));
 
-    const { professions } = useProfessions();
+const professions = useSelector(getProfessions());
     const professionsList = professions.map((p) => ({
         label: p.name,
         value: p._id

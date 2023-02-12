@@ -23,7 +23,7 @@ const { reducer: professionsReducer, actions } = professionsSlice;
 const { professionsReceved, professionsRequested, professionsRequestFailed } =
     actions;
 
-export const loadProffesions = () => async (dispatch) => {
+export const loadProfessionsList = () => async (dispatch) => {
     dispatch(professionsRequested());
     try {
         const { content } = await professionService.get();

@@ -11,6 +11,7 @@ import { useAuth } from "../../../hooks/useAuth";
 import { useSelector } from "react-redux";
 import { getQualities, getQualitiesLoadingStatus } from "../../../store/qualities";
 import { getProfessions, getProfessionsLoadingStatus } from "../../../store/professions";
+import { getCurrentUserData } from "../../../store/users";
 
 const EditUserPage = () => {
     const history = useHistory();
@@ -23,8 +24,8 @@ const EditUserPage = () => {
         qualities: []
     });
 
-    const { currentUser, updateProfile } = useAuth();
-
+    const { updateProfile } = useAuth();
+const currentUser = useSelector(getCurrentUserData());
     const qualities = useSelector(getQualities());
     const qualitiesLoading = useSelector(getQualitiesLoadingStatus());
     const qualitiesList = qualities.map((q) => ({

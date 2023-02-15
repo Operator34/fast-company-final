@@ -67,29 +67,20 @@ const AuthProvider = ({ children }) => {
         return Math.floor(Math.random() * (max - min + 1) + min);
     }
 
-    async function updateProfile({
-        email,
-        idToken = localStorageService.getAccessToken(),
-        ...rest
-    }) {
-        console.log("idToken", idToken, email);
+    async function updateProfile(data) {
         try {
-            if (currentUser.email !== email) {
-                const { data } = await httpAuth.post(`accounts:update`, {
-                    idToken,
-                    email,
-                    returnSecureToken: true
-                });
-                console.log("data после смены email:", data);
-                setTokens(data);
-            }
-            const { content } = await userService.updateUser({
-                _id: currentUser._id,
-                email,
-                ...rest
-            });
-            setUser((prev) => ({ ...prev, email, ...content }));
-            console.log("currentUser", currentUser);
+            const { content } = await userService.updateUser(data);
+            setUser(content);
+        } catch (error) {
+            errorCatcher(error);
+        }
+    }
+
+    async function createUser(data) {
+        try {
+            const { content } = await userService.create(data);
+            console.log(content);
+            setUser(content);
         } catch (error) {
             errorCatcher(error);
         }
@@ -128,15 +119,7 @@ const AuthProvider = ({ children }) => {
             }
         }
     }
-    async function createUser(data) {
-        try {
-            const { content } = await userService.create(data);
-            console.log(content);
-            setUser(content);
-        } catch (error) {
-            errorCatcher(error);
-        }
-    }
+
     function errorCatcher(error) {
         const { message } = error.response.data;
         setError(message);

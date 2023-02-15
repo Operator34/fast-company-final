@@ -31,6 +31,8 @@ const usersSlice = createSlice({
             state.isLoading = true;
         },
         usersReceved: (state, action) => {
+            console.log("usersReceved state", state);
+            console.log("usersReceved action", action);
             state.entities = action.payload;
             state.isLoading = false;
             state.dataLoaded = true;
@@ -40,6 +42,8 @@ const usersSlice = createSlice({
             state.isLoading = false;
         },
         authRequestedSuccess: (state, action) => {
+            console.log("authRequestedSuccess state", state);
+            console.log("authRequestedSuccess action", action);
             state.auth = action.payload;
             state.isLooggedIn = true;
         },
@@ -47,6 +51,8 @@ const usersSlice = createSlice({
             state.error = action.payload;
         },
         userCreated: (state, action) => {
+            console.log("userCreated state", state);
+            console.log("userCreated action", action);
             if (!Array.isArray(state.entities)) {
                 state.entities = [];
             }
@@ -57,6 +63,15 @@ const usersSlice = createSlice({
             state.isLooggedIn = false;
             state.auth = null;
             state.dataLoaded = false;
+        },
+        userUpdateSuccessed: (state, action) => {
+            console.log("userUpdateSuccessed state", state);
+            console.log("userUpdateSuccessed action", action);
+            state.entities[
+                state.entities.findIndex(
+                    (user) => user._id === action.payload._id
+                )
+            ] = action.payload;
         }
     }
 });
@@ -69,12 +84,15 @@ const {
     authRequestedSuccess,
     authRequestFailed,
     userCreated,
-    userLoggedOut
+    userLoggedOut,
+    userUpdateSuccessed
 } = actions;
 
 const authRequested = createAction("users/authRequested");
+const userUpdateRequested = createAction("users/userUpdateRequested");
 const userCreateRequested = createAction("user/userCreateRequested");
 const createUserFailed = createAction("user/createUserFailed");
+const userUpdateFailed = createAction("users/userUpdateFailed");
 
 export const logIn =
     ({ payload, redirect }) =>
@@ -90,7 +108,16 @@ export const logIn =
             dispatch(authRequestFailed(error.message));
         }
     };
-
+export const updateProfile = (payload) => async (dispatch) => {
+    dispatch(userUpdateRequested());
+    try {
+        const { content } = await userService.update(payload);
+        dispatch(userUpdateSuccessed(content));
+        history.push(`/users/${content._id}`);
+    } catch (error) {
+        dispatch(userUpdateFailed(error.message));
+    }
+};
 export const signUp =
     ({ email, password, ...rest }) =>
     async (dispatch) => {
@@ -157,6 +184,7 @@ export const getUsersLoadingStatus = () => (state) => state.users.isLoading;
 export const getIsLoogedIn = () => (state) => state.users.isLooggedIn;
 export const getDataStatus = () => (state) => state.users.dataLoaded;
 export const getCurrentUserId = () => (state) => state.users.auth.userId;
+
 export const getCurrentUserData = () => (state) => {
     return state.users.entities
         ? state.users.entities.find((u) => u._id === state.users.auth.userId)

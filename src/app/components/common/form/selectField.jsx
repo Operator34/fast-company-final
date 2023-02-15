@@ -11,7 +11,6 @@ const SelectField = ({
     name
 }) => {
     useEffect(() => {
-        console.log("value", value);
     }, [value]);
 
     const handleChange = ({ target }) => {

@@ -2,6 +2,7 @@ import { createAction, createSlice } from "@reduxjs/toolkit";
 import authService from "../services/auth.service";
 import localStorageService from "../services/localStorage.service";
 import userService from "../services/user.service";
+import generateAuthError from "../utils/generateAuthError";
 import randomInt from "../utils/getRandomInt";
 import history from "../utils/history";
 
@@ -40,6 +41,9 @@ const usersSlice = createSlice({
         usersRequestedFailed: (state, action) => {
             state.error = action.payload;
             state.isLoading = false;
+        },
+        authRequested: (state) => {
+            state.error = null;
         },
         authRequestedSuccess: (state, action) => {
             console.log("authRequestedSuccess state", state);
@@ -81,6 +85,7 @@ const {
     usersReceved,
     usersRequested,
     usersRequestedFailed,
+    authRequested,
     authRequestedSuccess,
     authRequestFailed,
     userCreated,
@@ -88,7 +93,6 @@ const {
     userUpdateSuccessed
 } = actions;
 
-const authRequested = createAction("users/authRequested");
 const userUpdateRequested = createAction("users/userUpdateRequested");
 const userCreateRequested = createAction("user/userCreateRequested");
 const createUserFailed = createAction("user/createUserFailed");
@@ -105,7 +109,13 @@ export const logIn =
             localStorageService.setTokens(data);
             history.push(redirect);
         } catch (error) {
-            dispatch(authRequestFailed(error.message));
+            const { code, message } = error.response.data.error;
+            if (code === 400) {
+                const errorMessage = generateAuthError(message);
+                dispatch(authRequestFailed(errorMessage));
+            } else {
+                dispatch(authRequestFailed(error.message));
+            }
         }
     };
 export const updateProfile = (payload) => async (dispatch) => {
@@ -190,4 +200,5 @@ export const getCurrentUserData = () => (state) => {
         ? state.users.entities.find((u) => u._id === state.users.auth.userId)
         : null;
 };
+export const getAuthErrors = () => (state) => state.users.error;
 export default usersReducer;

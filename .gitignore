@@ -3,9 +3,10 @@
 # dependencies
 /node_modules
 /.pnp
+/.env.development
 .pnp.js
 .env.development.local
-/.env.development
+
 
 # testing
 /coverage
